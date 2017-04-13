@@ -1,6 +1,7 @@
 <template>
   <div>
-    <v-header></v-header>
+    <!-- v-bind:seller缩写:seller -->
+    <v-header :seller="seller"></v-header>
     <div class="tab border-1px">
       <div class="tab-item">
         <router-link to="/goods">商品</router-link>
@@ -20,15 +21,18 @@
 
   const ERR_OK = 0;
   export default {
+    // header组件内设置Seller数据容器对象
     data () {
       return {
         seller: {}
       };
     },
+    // vue-resource ajax requset
     created () {
       this.$http.get('/api/seller').then((response) => {
         response = response.body;
         if (response.errno === ERR_OK) {
+    // 设置seller数据
           this.seller = response.data;
           console.log(this.seller);
         }
