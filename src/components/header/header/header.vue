@@ -2,7 +2,7 @@
 	<div class="header">
 		<div class="content-wrapper">
 			<div class="avatar">
-				<img width="64" height="64" :src="seller.avatar" alt="">
+				<img width="64" height="64" src="seller.avatar" alt="">
 			</div>
 			<div class="content">
 				<div class="title">
@@ -13,7 +13,7 @@
 					{{seller.description}}/{{seller.deliveryTime}}
 				</div>
 				<div v-if="seller.supports" class="support">
-					<span class="icon :class="classMap[seller.supports[0].type]></span>
+					<span class="icon"></span>
 					<span class="text">{{seller.suppports[0].description</span>
 				</div>
 			</div>
@@ -29,9 +29,6 @@
 			seller: {
 				type: Object
 			}
-		},
-		created () {
-			this.classMap = ['decrease','discount','special','invoice','guarantee'];
 		}
 	};
 </script>
@@ -76,7 +73,6 @@
 			.support
 				.icon
 					display: inline-block
-					vertical-align: top
 					width: 12px
 					height: 12px
 					margin-right: 4px
@@ -84,21 +80,6 @@
 					backgroung-repeat: no-repeat
 					// 父样式的子样式
 					&.decrease
-						bg-image('decrease_1')
-					&.discount
-						bg-image('discount_1')
-					&.guarantee
-						bg-image('guarantee_1')
-					&.special
-						bg-image('special_1')
-					&.invoice
-						bg-image('invoice_1')
-				.text
-					line-height: 12px
-					font-size: 12px
-					
-					
-						
 				
 		
 </style>
