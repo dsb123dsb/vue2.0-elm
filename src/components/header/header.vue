@@ -35,17 +35,43 @@
 			<img :src="seller.avatar" width="100%" height="100%">
 		</div>
 		<!-- 浮层 -->
-		<div v-show="detailShow" class="detail">
-			<div class="detail-wrapper clearfix">
-				<div class="detail-main">
-					<h1 class="name">{{seller.name}}</h1>
-					<star :size="48" :score="seller.score"></star>
+		<transition name="fade">
+			<div v-show="detailShow" class="detail">
+				<div class="detail-wrapper clearfix">
+					<div class="detail-main">
+						<h1 class="name">{{seller.name}}</h1>
+						<div class="star-wrapper">
+							<star :size="48" :score="seller.score"></star>
+						</div>
+						<!-- flex弹性布局，line自适应（可以封装为组件） -->
+						<div class="title">
+							<div class="line"></div>
+							<div class="text">优惠信息</div>
+							<div class="line"></div>
+						</div>
+						<ul v-if="seller.supports" class="supports">
+							<!-- 列表循环vue2.0和1.0不同 -->
+							<li v-for="(item,index) in seller.supports" class="support-item">
+								<span class="icon" :class="classMap[seller.supports[index].type]"></span>
+								<span class="text">{{seller.supports[index].description}}</span>
+							</li>
+						</ul>
+						<div class="title">
+							<div class="line"></div>
+							<div class="text">商家公告</div>
+							<div class="line"></div>
+						</div>
+						<div class="bulletin">
+							<p class="content">{{seller.bulletin}}</p>
+						</div>											
+					</div>
 				</div>
-			</div>
-			<div class="detail-close">
-				<i class="icon-close"></i>
-			</div>
-		</div>
+				<div class="detail-close" @click="hideDetail">
+					<i class="icon-close"></i>
+				</div>
+			</div>			
+		</transition>
+
 	</div>
 </template>
 
@@ -65,10 +91,13 @@
 	      detailShow: false
 	    };
 	  },
-	  // 方法
+	  // 方法.(1.2现实消失模态框)
 	  methods: {
 	    showDetail () {
 	      this.detailShow = true;
+	    },
+	    hideDetail () {
+	      this.detailShow = false;
 	    }
 	  },
 	  created () {
@@ -81,7 +110,7 @@
 	};
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
-@import "../../common/stylus/mixin"
+	@import "../../common/stylus/mixin"
 	.header
 		position: relative
 		// 否则fiter: bulr会溢出header
@@ -214,6 +243,18 @@
 			height: 100%
 			overflow: auto
 			background: rgba(7,17,27,0.8)
+			// 背景模糊，尽在ios生效
+			backdrop-filter: blur(10px)
+			// css3动画vue2.0和1.0不同，模态框渐变出现
+			&.fade-enter-active
+				transition: all 0.5s
+				background: rgba(7,17,27,0.8)
+			&.fade-leave-active
+				transition: all 0.5s
+				opacity: 0
+			&.fade-leave-active, &.fade-enter
+				opacity: 0
+				background: rgba(7,17,27,0)	
 			// sticky-footer布局，关闭部分不会遮挡内容
 			.detail-wrapper
 				min-height: 100%
@@ -226,6 +267,61 @@
 						text-align: center
 						font-size: 16px
 						font-weight: 700
+					.star-wrapper
+						margin-top: 18px
+						padding: 2px 0
+						text-align: center
+					// flex弹性布局，line自适应 Postcss can i use 做兼容处理
+					.title
+						display: flex
+						width: 80%
+						margin: 28px auto 24px auto
+						.line
+							flex: 1
+							position: relative
+							top: -6px
+							border-bottom: 1px solid rgba(255,255,255,0.2)
+						.text
+							padding: 0 12px
+							font-weight: 700
+							font-size: 14px
+					.supports
+						width: 80%
+						margin: 0 auto
+						.support-item
+							padding: 0 12px
+							margin-bottom: 12px
+							font-size: 0
+							&:last-child
+								margin-bottom: 0
+							.icon
+								display: inline-block
+								width: 16px
+								height: 16px
+								vertical-align: top
+								margin-right: 6px
+								background-size: 16px
+								background-repeat: no-repeat
+								&.decrease
+									bg-image('decrease_1')
+								&.discount
+									bg-image('discount_1')
+								&.guarantee
+									bg-image('guarantee_1')
+								&.special
+									bg-image('special_1')
+								&.invoice
+									bg-image('invoice_1')
+							.text
+								line-height: 16px
+								font-size: 12px	
+					.bulletin
+						width: 80%
+						margin: 0 auto
+						.content
+							padding: 0 12px
+							line-height: 24px
+							font-size: 12px											
 			.detail-close
 				position: relative
 				width: 32px

@@ -47,6 +47,8 @@
 	};
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
+	// 每次每个组件都要引入？
+	@import "../../common/stylus/mixin"
 	.star
 		font-size: 0
 		.star-item
@@ -57,7 +59,7 @@
 				width: 20px
 				height: 20px
 				margin-right: 22px
-				background: 20px 20px
+				background-size: 20px 20px
 				&:last-child
 					margin-right: 0
 				&.on
@@ -71,7 +73,7 @@
 				width: 15px
 				height: 15px
 				margin-right: 16px
-				background: 15px 15px
+				background-size: 15px 15px
 				&:last-child
 					margin-right: 0
 				&.on
@@ -85,7 +87,7 @@
 				width: 10px
 				height: 10px
 				margin-right: 3px
-				background: 10px 10px
+				background-size: 10px 10px
 				&:last-child
 					margin-right: 0
 				&.on
