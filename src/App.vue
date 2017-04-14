@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- v-bind:seller缩写:seller -->
+    <!-- v-bind:seller缩写:seller v-on:click=缩写@click -->
     <v-header :seller="seller"></v-header>
     <div class="tab border-1px">
       <div class="tab-item">
@@ -32,14 +32,15 @@
       this.$http.get('/api/seller').then((response) => {
         response = response.body;
         if (response.errno === ERR_OK) {
-    // 设置seller数据
+          // 设置seller数据
           this.seller = response.data;
           console.log(this.seller);
         }
       });
     },
+    // 前面引入后，父组件内注册子组件组件名不能使用html内置标签
     components: {
-      'v-header': header// 组件名不能使用html内置标签
+      'v-header': header
     }
   };
 </script>

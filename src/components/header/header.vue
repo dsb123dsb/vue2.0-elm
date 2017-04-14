@@ -1,4 +1,5 @@
 <template>
+    <!-- 动态绑定v-bind:seller缩写:seller v-on:click=缩写@click -->
 	<div class="header">
 		<div class="content-wrapper">
 			<div class="avatar">
@@ -13,37 +14,69 @@
 				<div class="description">
 					{{seller.description}}/{{seller.deliveryTime}}
 				</div>
-				<div v-if="seller.supports" class="support">
+				<div v-if="seller.supports" class="support" @click="showDetail">
 					<span class="icon" :class="classMap[seller.supports[0].type]"></span>
 					<span class="text">{{seller.supports[0].description}}</span>
 				</div>
 			</div>
-			<div v-if="seller.supports" class="support-count">
+			<div v-if="seller.supports" class="support-count" @click="showDetail">
 				<span class="count">{{seller.supports.length}}个</span>
 				<i class="icon-keyboard_arrow_right"></i>
 			</div>
 		</div>
 
-		<div class="bulletin-wrapper">
+		<div class="bulletin-wrapper" @click="showDetail">
 			<!-- 同行消除inline-block带来的间隙 -->
 			<span class="bulletin-title"></span><span class="bulletin-text">{{seller.bulletin}}</span>
 			<i class="icon-keyboard_arrow_right"></i>
 		</div>
+		<!-- 设置背景图片，父元素设置background-image无法设置模糊 -->
 		<div class="background">
 			<img :src="seller.avatar" width="100%" height="100%">
+		</div>
+		<!-- 浮层 -->
+		<div v-show="detailShow" class="detail">
+			<div class="detail-wrapper clearfix">
+				<div class="detail-main">
+					<h1 class="name">{{seller.name}}</h1>
+					<star :size="48" :score="seller.score"></star>
+				</div>
+			</div>
+			<div class="detail-close">
+				<i class="icon-close"></i>
+			</div>
 		</div>
 	</div>
 </template>
 
 <script type="text/ecmascript-6">
+	import star from '@/components/star/star';
+
 	export default {
+	  // 钩子 父组件中绑定设置的seller
 	  props: {
 	    seller: {
 	      type: Object
 	    }
 	  },
+	  // 子组件数据
+	  data () {
+	    return {
+	      detailShow: false
+	    };
+	  },
+	  // 方法
+	  methods: {
+	    showDetail () {
+	      this.detailShow = true;
+	    }
+	  },
 	  created () {
 	    this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
+	  },
+	  // 前面引入后，父组件内注册子组件组件名不能使用html内置标签
+	  components: {
+	    star
 	  }
 	};
 </script>
@@ -51,6 +84,8 @@
 @import "../../common/stylus/mixin"
 	.header
 		position: relative
+		// 否则fiter: bulr会溢出header
+		overflow: hidden
 		color: #fff
 		background: rgba(7,17,27,0.5)
 		.content-wrapper
@@ -144,7 +179,7 @@
 			background: rgba(7,17,27,0.2)
 			.bulletin-title
 				display: inline-block
-				margin-top: 7px
+				margin-top: 8px
 				vertical-align: top
 				width: 	22px
 				height: 12px
@@ -169,4 +204,35 @@
 			z-index: -1
 			// 背景图模糊
 			filter: blur(10px)
+		.detail
+			position: fixed
+			z-index: 100
+			// 不设置top left不会全屏显示
+			top: 0
+			left: 0
+			width: 100%
+			height: 100%
+			overflow: auto
+			background: rgba(7,17,27,0.8)
+			// sticky-footer布局，关闭部分不会遮挡内容
+			.detail-wrapper
+				min-height: 100%
+				width: 100%
+				.detail-main
+					margin-top: 64px
+					padding-bottom: 64px
+					.name
+						line-height: 16px
+						text-align: center
+						font-size: 16px
+						font-weight: 700
+			.detail-close
+				position: relative
+				width: 32px
+				height: 32px
+				margin: -64px auto 0 auto
+				clear: both
+				font-size: 32px
+				
+			
 </style>

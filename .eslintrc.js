@@ -25,7 +25,11 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
     // 强制写分号
     'semi': ['error','always'],
+    // 允许tab
+    'no-tabs': 0,
     // 缩进为0
-    'indent': 0
+    'indent': 0,
+    // 允许函数括号前无空格
+    'space-before-function-paren': 0
   }
 }
