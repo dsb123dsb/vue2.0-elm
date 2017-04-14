@@ -246,15 +246,12 @@
 			// 背景模糊，尽在ios生效
 			backdrop-filter: blur(10px)
 			// css3动画vue2.0和1.0不同，模态框渐变出现
-			&.fade-enter-active
+			&.fade-enter-active, &.fade-leave-active
 				transition: all 0.5s
 				background: rgba(7,17,27,0.8)
-			&.fade-leave-active
-				transition: all 0.5s
+			&.fade-enter, &.fade-leave-active
 				opacity: 0
-			&.fade-leave-active, &.fade-enter
-				opacity: 0
-				background: rgba(7,17,27,0)	
+				background: rgba(7,17,27,0)
 			// sticky-footer布局，关闭部分不会遮挡内容
 			.detail-wrapper
 				min-height: 100%
