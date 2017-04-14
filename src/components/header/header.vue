@@ -25,18 +25,18 @@
 
 <script type="text/ecmascript-6">
 	export default {
-		props: {
-			seller: {
-				type: Object
-			}
-		},
-		created () {
-			this.classMap = ['decrease','discount','special','invoice','guarantee'];
-		}
+	  props: {
+	    seller: {
+	      type: Object
+	    }
+	  },
+	  created () {
+	    this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
+	  }
 	};
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
-@import "..//..components/stylus/mixin"
+@import "../../common/stylus/mixin"
 	.header
 		color: #fff
 		background: #000
@@ -57,7 +57,7 @@
 				.brand
 					// 内联元素无法设置宽高
 					display: inline-block
-					// 把元素的顶端与行中最高元素的顶端对齐
+					// 把元素的顶端与行中(行高18)最高元素的顶端对齐
 					vertical-align: top
 					width: 30px 
 					height: 18px
