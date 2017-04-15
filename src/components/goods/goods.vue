@@ -39,12 +39,13 @@
 				</li>
 			</ul>
 		</div>
+		<shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
 	</div>
-
 </template>
 
 <script type="text/ecmascript-6">
 	import BScroll from 'better-scroll';
+	import shopcart from '@/components/shopcart/shopcart';
 
 	const ERR_OK = 0;
 
@@ -134,6 +135,9 @@
 				}
 				console.log(this.listHeight);
 			}
+		},
+		components: {
+			shopcart
 		}
 	};
 </script>
@@ -147,7 +151,7 @@
 		bottom: 46px
 		// 禁止滚动
 		z-index: -2
-		// overflow: hidden
+		overflow: hidden
 		.menu-wapper
 			flex: 0 0 80px
 			// width 还要设置，要不会有兼容性问题,左侧固定，右侧自适应

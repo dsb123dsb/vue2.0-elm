@@ -12,7 +12,7 @@
 	const CLS_OFF = 'off';
 
 	export default {
-	  // 外部传入数据接口
+	  // 外部传入数据接口(接收)
 	  props: {
 	    size: {
 	      type: Number

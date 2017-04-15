@@ -13,7 +13,8 @@
         <router-link to="/seller">商家</router-link>
       </div>
     </div>
-    <router-view></router-view>
+    <!-- seller传入路由出口，三个子组件才能接收 -->
+    <router-view :seller="seller"></router-view>
   </div>
 </template>
 <script>
