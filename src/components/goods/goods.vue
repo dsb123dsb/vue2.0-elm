@@ -18,34 +18,38 @@
 					<h1 class="title">{{item.name}}</h1>
 					<ul>
 						<li v-for="food in item.foods" class="food-item border-1px">
-						<div class="icon">
-							<!-- 图片建议直接在标签内写好宽高 -->
-							<img width="57" height="57" :src="food.icon" alt="">
-						</div>
-						<div class="content">
-							<h2 class="name">{{food.name}}</h2>
-							<p class="desc">{{food.description}}</p>
-							<div class="extra">
-								<span class="count">月售{{food.sellCount}}份</span>
-								<span class="rating">好评率: {{food.rating}}%</span>
+							<div class="icon">
+								<!-- 图片建议直接在标签内写好宽高 -->
+								<img width="57" height="57" :src="food.icon" alt="">
 							</div>
-							<div class="price">
-								<span class="now">￥{{food.price}}</span>
-								<span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
+							<div class="content">
+								<h2 class="name">{{food.name}}</h2>
+								<p class="desc">{{food.description}}</p>
+								<div class="extra">
+									<span class="count">月售{{food.sellCount}}份</span>
+									<span class="rating">好评率: {{food.rating}}%</span>
+								</div>
+								<div class="price">
+									<span class="now">￥{{food.price}}</span>
+									<span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
+								</div>
+								<div class="cartcontrol-wrapper">
+									<cartcontrol :food="food"></cartcontrol>
+								</div>
 							</div>
-						</div>
 						</li>
 					</ul>
 				</li>
 			</ul>
 		</div>
-		<shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+		<shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
 	</div>
 </template>
 
 <script type="text/ecmascript-6">
 	import BScroll from 'better-scroll';
 	import shopcart from '@/components/shopcart/shopcart';
+	import cartcontrol from '@/components/cartcontrol/cartcontrol';
 
 	const ERR_OK = 0;
 
@@ -91,6 +95,18 @@
 				}
 				// 若循环没有返回，这里返回函数值未0
 				return	0;
+			},
+			// 遍历选中的food(有无count属性)并且传入购物车组件
+			selectFoods() {
+				let foods = [];
+				this.goods.forEach((good) => {
+					good.foods.forEach((food) => {
+						if (food.count) {
+							foods.push(food);
+						}
+					});
+				});
+				return foods;
 			}
 		},
 		methods: {
@@ -113,6 +129,7 @@
 					click: true
 				});
 				this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+					click: true,
 					// 探针检测滚动Y位置
 					probeType: 3
 				});
@@ -137,7 +154,8 @@
 			}
 		},
 		components: {
-			shopcart
+			shopcart,
+			cartcontrol
 		}
 	};
 </script>
@@ -256,7 +274,10 @@
 							text-decoration: line-through
 							font-size: 10px
 							color: rgb(147,153,159)	
-							
+					.cartcontrol-wrapper
+						position: absolute
+						right: 0		
+						bottom: 12px
 							
 						
 
