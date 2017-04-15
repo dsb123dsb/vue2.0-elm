@@ -155,7 +155,7 @@
 				.support
 					.icon
 						display: inline-block
-						vertical-align: middle
+						vertical-align: top
 						width: 12px
 						height: 12px
 						margin-right: 4px
@@ -173,6 +173,7 @@
 						&.invoice
 							bg-image('invoice_1')
 					.text
+						vertical-align: top
 						line-height: 12px
 						font-size: 10px
 			.support-count
