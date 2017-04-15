@@ -83,7 +83,7 @@
 				for (let i = 0; i < this.listHeight.length; i++) {
 					let height1 = this.listHeight[i];
 					let height2 = this.listHeight[i + 1];
-					if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+					if (!height2 || (this.scrollY >= height1 - 1 && this.scrollY < height2 - 1)) {
 						// console.log('now :' + i);
 						return i;
 					}
@@ -118,7 +118,7 @@
 				// 监听滚动事件Y位置
 				this.foodsScroll.on('scroll', (pos) => {
 					this.scrollY = Math.abs(Math.round(pos.y));
-					// console.log(this.scrollY);
+				// console.log(this.scrollY);
 				});
 			},
 			// 计算滚动位置 和menu联动
@@ -130,9 +130,9 @@
 					let item = foodList[i];
 					// clientHeight返回元素内部的高度(单位像素)，包含内边距，但不包括水平滚动条、边框和外边距。
 					height += item.clientHeight;
-					console.log(height);
 					this.listHeight.push(height);
 				}
+				console.log(this.listHeight);
 			}
 		}
 	};
