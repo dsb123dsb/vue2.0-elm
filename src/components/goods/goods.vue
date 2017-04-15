@@ -1,17 +1,20 @@
 <template>
+	<!-- 动态绑定v-bind:seller缩写:seller v-on:click=缩写@click= -->
 	<div class="goods">
-		<div class="menu-wapper">
+		<!-- ref属性和vue1.0的v-el:不同 -->
+		<div class="menu-wapper" ref="menuWrapper">
 			<ul>
-				<li v-for="item in goods" class="menu-item">
-					<span class="text order-1px">
+				<!-- 计算menu和foods联动 -->
+				<li v-for="(item,index) in goods" class="menu-item" :class="{'current':currentIndex===index}" @click="selectMenu(index,$event)">
+					<span class="text border-1px">
 						<span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>{{item.name}}
 					</span>
 				</li>
 			</ul>
 		</div>
-		<div class="foods-wrapper">
+		<div class="foods-wrapper" ref="foodsWrapper">
 			<ul>
-				<li v-for="item in goods" class="food-list">
+				<li v-for="item in goods" class="food-list food-list-hook">
 					<h1 class="title">{{item.name}}</h1>
 					<ul>
 						<li v-for="food in item.foods" class="food-item border-1px">
@@ -41,6 +44,8 @@
 </template>
 
 <script type="text/ecmascript-6">
+	import BScroll from 'better-scroll';
+
 	const ERR_OK = 0;
 
 	export default {
@@ -51,7 +56,10 @@
 		},
 		data() {
 			return {
-				goods: []
+				goods: [],
+				// foods列表高度
+				listHeight: [],
+				scrollY: 0
 			};
 		},
 		created() {
@@ -61,8 +69,71 @@
 				if (response.errno === ERR_OK) {
 					this.goods = response.data;
 					console.log(this.goods);
+					// 更新数据时DOM并没有更新，是异步的，要下一个nextTick
+					this.$nextTick(() => {
+						this._initScroll();
+						this._calculateHeight();
+					});
 				}
 			});
+		},
+		computed: {
+			// 计算滚动到第几个列表，并返回索引
+			currentIndex() {
+				for (let i = 0; i < this.listHeight.length; i++) {
+					let height1 = this.listHeight[i];
+					let height2 = this.listHeight[i + 1];
+					if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+						// console.log('now :' + i);
+						return i;
+					}
+				}
+				// 若循环没有返回，这里返回函数值未0
+				return	0;
+			}
+		},
+		methods: {
+			// 左侧点击menu。右侧foods列表对应变化
+			selectMenu(index, event) {
+				// 阻止浏览器默认点击事件（原来better-Scroll会移动端会阻止默认点击事件，现在也不会了，其实现在只用默认的就好）
+				if (!event._constructed) {
+					return;
+				}
+				// console.log(index);
+				let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook');
+				let el = foodList[index];
+				// better-Scroll接口
+				this.foodsScroll.scrollToElement(el, 300);
+			},
+			// 滚动函数
+			_initScroll() {
+				this.menuScroll = new BScroll(this.$refs.menuWrapper, {
+					// 启用点击事件
+					click: true
+				});
+				this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+					// 探针检测滚动Y位置
+					probeType: 3
+				});
+				// 监听滚动事件Y位置
+				this.foodsScroll.on('scroll', (pos) => {
+					this.scrollY = Math.abs(Math.round(pos.y));
+					// console.log(this.scrollY);
+				});
+			},
+			// 计算滚动位置 和menu联动
+			_calculateHeight() {
+				let foodList = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook');
+				let height = 0;
+				this.listHeight.push(height);
+				for (let i = 0; i < foodList.length; i++) {
+					let item = foodList[i];
+					// clientHeight返回元素内部的高度(单位像素)，包含内边距，但不包括水平滚动条、边框和外边距。
+					height += item.clientHeight;
+					console.log(height);
+					this.listHeight.push(height);
+				}
+			}
 		}
 	};
 </script>
@@ -75,7 +146,8 @@
 		width: 100%
 		bottom: 46px
 		// 禁止滚动
-		overflow: hidden
+		z-index: -2
+		// overflow: hidden
 		.menu-wapper
 			flex: 0 0 80px
 			// width 还要设置，要不会有兼容性问题,左侧固定，右侧自适应
@@ -88,6 +160,14 @@
 				width: 56px
 				padding: 0 12px
 				line-height: 14px
+				&.current
+					positon: relative
+					margin-top: -1px
+					z-index: 10
+					background: #fff
+					font-weight: 700
+					.text
+						border-none()
 				.icon
 					display: inline-block
 					vertical-align: top
@@ -146,12 +226,13 @@
 						font-size: 14px
 						color: rgb(7,17,27)
 					.desc, .extra
-						line-height: 10px
 						font-size: 10px
 						color: rgb(147,153,159)	
 					.desc
+						line-height: 12px
 						margin-bottom: 8px			
 					.extra
+						line-height: 10px
 						font-size: 0
 						.count, .rating
 							font-size: 10px
@@ -161,6 +242,7 @@
 					.price
 						font-weight: 700
 						line-height: 24px
+						// 去除间隙
 						font-size: 0
 						.now
 							margin-right: 18px

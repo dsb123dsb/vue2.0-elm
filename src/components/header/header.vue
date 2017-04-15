@@ -1,5 +1,5 @@
 <template>
-    <!-- 动态绑定v-bind:seller缩写:seller v-on:click=缩写@click -->
+    <!-- 动态绑定v-bind:seller缩写:seller v-on:click=缩写@click= -->
 	<div class="header">
 		<div class="content-wrapper">
 			<div class="avatar">
