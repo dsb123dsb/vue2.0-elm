@@ -15,6 +15,11 @@
 				<div class="pay" :class="payClass">{{payDesc}}</div>
 			</div>
 		</div>
+		<div class="ball-containter">
+			<div v-for="ball in balls" v-show="ball.show" class="ball">
+				<div class="inner"></div>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -40,6 +45,27 @@
 				type: Number,
 				default: 0
 			}
+		},
+		data() {
+			return {
+				balls: [
+					{
+						show: false
+					},
+					{
+						show: false
+					},
+					{
+						show: false
+					},
+					{
+						show: false
+					},
+					{
+						show: false
+					}
+				]
+			};
 		},
 		computed: {
 			totalPrice() {
@@ -72,6 +98,12 @@
 				} else {
 					return 'enough';
 				}
+			}
+		},
+		methods: {
+			// 获取组件实例传来其它子组件dom
+			drop(el) {
+				// console.log(el);
 			}
 		}
 	};
@@ -166,4 +198,17 @@
 					&.enough
 						background: #00b43c	
 						color: 	#fff
+		.ball-containter
+			.ball
+				position: fixed
+				left: 32px
+				bottom: 22px
+				z-index: 200
+				&.drop-transition
+					.inner
+						width: 16px
+						height: 16px
+						border-radius: 50%
+						background: rgb(0,160,220)
+						
 </style>

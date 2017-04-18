@@ -36,6 +36,8 @@
 				} else {
 					this.food.count++;
 				}
+				// 派发事件，同时传出事件对象,$dispatch方法移除和vue1.0区别
+				this.$emit('add', event.target);
 			},
 			decreaseCart(event) {
 				if (!event._constructed) {

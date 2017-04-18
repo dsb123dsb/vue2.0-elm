@@ -34,7 +34,8 @@
 									<span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
 								</div>
 								<div class="cartcontrol-wrapper">
-									<cartcontrol :food="food"></cartcontrol>
+									<!-- 使用 v-on缩写@，监听子组件上 $emit 的变化，是跨多层父子组件通信的话， $emit （仔组件定义）并没有什么用 -->
+									<cartcontrol @add="addFood" :food="food"></cartcontrol>
 								</div>
 							</div>
 						</li>
@@ -42,7 +43,9 @@
 				</li>
 			</ul>
 		</div>
-		<shopcart :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+		<shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+	<!-- 使用 v-on缩写@，监听子组件上 $emit 的变化，是跨多层父子组件通信的话， $emit （仔组件定义）并没有什么用 -->
+	<food @add="addFood" :food="selectedFood" ref="food"></food>	
 	</div>
 </template>
 
@@ -50,6 +53,7 @@
 	import BScroll from 'better-scroll';
 	import shopcart from '@/components/shopcart/shopcart';
 	import cartcontrol from '@/components/cartcontrol/cartcontrol';
+	import food from '@/components/food/food';
 
 	const ERR_OK = 0;
 
@@ -151,12 +155,31 @@
 					this.listHeight.push(height);
 				}
 				console.log(this.listHeight);
+			},
+			// d调用实例方法（父组件相当于传递作用，获取一个组件dom，调用另一个组件方法将dom传入）
+			addFood(target) {
+				this._drop(target);
+			},
+			_drop(target) {
+				this.$refs.shopcart.drop(target);
+			},
+			selectedFood() {
+				console.log();
 			}
 		},
 		components: {
 			shopcart,
-			cartcontrol
+			cartcontrol,
+			food
 		}
+		//  2.0废除接收子组件事件
+		// events: {
+		// 	 获取自组建dom
+		// 	'cart.add'(target) {
+		// 		 调用其它方法（取出dom）
+		// 		this._drop(target);
+		// 	}
+		// }
 	};
 </script>
 <style lang="stylus" rel="stylesheet/stylus">
@@ -169,7 +192,8 @@
 		bottom: 46px
 		// 禁止滚动
 		z-index: -2
-		overflow: hidden
+		// 超出隐藏的话手机测试底部空白把购物车挡住
+		// overflow: hidden
 		.menu-wapper
 			flex: 0 0 80px
 			// width 还要设置，要不会有兼容性问题,左侧固定，右侧自适应
