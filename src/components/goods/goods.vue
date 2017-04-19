@@ -45,7 +45,7 @@
 		</div>
 		<shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
 	<!-- 使用 v-on缩写@，监听子组件上 $emit 的变化，是跨多层父子组件通信的话， $emit （仔组件定义）并没有什么用 -->
-	<food @add="addFood" :food="selectedFood" ref="food"></food>	
+	<food :food="selectedFood" ref="food"></food>	
 	</div>
 </template>
 
@@ -161,8 +161,11 @@
 				this._drop(target);
 			},
 			_drop(target) {
-				this.$refs.shopcart.drop(target);
-			},
+				// 防止快速多次点击时动画卡，异步执行动画
+				this.$nextTick(() => {
+					this.$refs.shopcart.drop(target);
+				});
+		},
 			selectedFood() {
 				console.log();
 			}

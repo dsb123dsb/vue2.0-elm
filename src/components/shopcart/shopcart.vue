@@ -16,8 +16,14 @@
 			</div>
 		</div>
 		<div class="ball-containter">
-			<div v-for="ball in balls" v-show="ball.show" class="ball">
-				<div class="inner"></div>
+		 <!-- <transition> can only be used on a single element. Use <transition-group> for lists. -->
+			<div v-for="ball in balls">
+				<!-- transition事件before-enter、enter、after-enter、before-leave、leave、after-leave、before-appear、appear、after-appear -->
+				<transition name="drop" @before-enter="beforeDrop" @enter="dropping" @after-enter="afterDrop">
+					<div v-show="ball.show" class="ball">
+						<div class="inner inner-hook"></div>
+					</div>
+				</transition>					
 			</div>
 		</div>
 	</div>
@@ -64,7 +70,8 @@
 					{
 						show: false
 					}
-				]
+				],
+				dropBalls: []
 			};
 		},
 		computed: {
@@ -104,6 +111,57 @@
 			// 获取组件实例传来其它子组件dom
 			drop(el) {
 				// console.log(el);
+				for (let i = 0; i < this.balls.length; i++) {
+					let ball = this.balls[i];
+					if (!ball.show) {
+						ball.show = true;
+						ball.el = el;
+						this.dropBalls.push(ball);
+						// 找到一个隐藏的ball就退出
+						return;
+					}
+				}
+			},
+			// transition事件,设置动画
+			beforeDrop(el) {
+				let count = this.balls.length;
+				while (count--) {
+					let ball = this.balls[count];
+					if (ball.show) {
+						// h获取元素相对视口信息
+						let rect = ball.el.getBoundingClientRect();
+						// 小球距离目的的x ，y距离
+						let x = rect.left - 32;
+						// tanslated3d 中y为欸正向下移动
+						let y = -(window.innerHeight - rect.top - 22);
+						// v-show会默认把display设置未none
+						el.style.display = '';
+						el.style.webkitTransform = `translate3d(0,${y}px,0)`;
+						el.style.transform = `translate3d(0,${y}px,0)`;
+						let inner = el.getElementsByClassName('inner-hook')[0];
+						inner.style.webkitTransform = `translate3d(${x}px,0,0)`;
+						inner.style.transform = `translate3d(${x}px,0,0)`;
+					}
+				}
+			},
+			dropping(el) {
+				/* eslint-disable no-unused-vars */
+				// 手动触发重绘，后面设置transfor才有用
+				let rf = el.offsetHeight;
+				this.$nextTick(() => {
+				el.style.webkitTransform = 'translate3d(0,0,0)';
+				el.style.transform = 'translate3d(0,0,0)';
+				let inner = el.getElementsByClassName('inner-hook')[0];
+				inner.style.webkitTransform = 'translate3d(0,0,0)';
+				inner.style.transform = 'translate3d(0,0,0)';
+				});
+			},
+			afterDrop(el) {
+				let ball = this.dropBalls.shift();
+				if (ball) {
+					ball.show = false;
+					el.style.display = 'none';
+				}
 			}
 		}
 	};
@@ -204,11 +262,12 @@
 				left: 32px
 				bottom: 22px
 				z-index: 200
-				&.drop-transition
-					.inner
-						width: 16px
-						height: 16px
-						border-radius: 50%
-						background: rgb(0,160,220)
-						
+				// 动画过渡设置（终泰）
+				transition: all 0.4s cubic-bezier(0.49, -0.29, 0.75, 0.41)
+				.inner
+					width: 16px
+					height: 16px
+					border-radius: 50%
+					background: rgb(0,160,220)
+					transition: all 0.4s linear
 </style>
