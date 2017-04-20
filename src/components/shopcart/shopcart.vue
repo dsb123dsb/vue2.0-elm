@@ -12,7 +12,8 @@
 					<div class="price" :class="{'hightlight':totalPrice>0}">￥{{totalPrice}}</div>
 					<div class="desc">另需配送费￥{{deliveryPrice}}元</div>
 				</div>
-				<div class="content-right">
+				<!-- 去结算，同时阻止事件5冒泡（防止触发父元素事件）和默认事件 -->
+				<div class="content-right" @click.stop.prevent="pay">
 					<div class="pay" :class="payClass">{{payDesc}}</div>
 				</div>
 			</div>
@@ -50,7 +51,7 @@
 			</transition>
 		</div>
 		<transition name="fade">
-			<div class="list-mask" v-show="listShow"></div>	
+			<div class="list-mask" @click="toggleList" v-show="listShow"></div>	
 		</transition>		
 	</div>
 </template>
@@ -226,6 +227,14 @@
 				this.selectFoods.forEach((food) => {
 					food.count = 0;
 				});
+			},
+			// 去结算，同时阻止事件5冒泡（防止触发父元素事件）
+			pay() {
+				if (this.totalPrice < this.minPrice) {
+					return;
+				} else {
+					window.alert(`支付${this.totalPrice}`);
+				}
 			}
 		},
 		components: {
