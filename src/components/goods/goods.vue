@@ -1,51 +1,55 @@
 <template>
-	<!-- 动态绑定v-bind:seller缩写:seller v-on:click=缩写@click= -->
-	<div class="goods">
-		<!-- ref属性和vue1.0的v-el:不同 -->
-		<div class="menu-wapper" ref="menuWrapper">
-			<ul>
-				<!-- 计算menu和foods联动 -->
-				<li v-for="(item,index) in goods" class="menu-item" :class="{'current':currentIndex===index}" @click="selectMenu(index,$event)">
-					<span class="text border-1px">
-						<span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>{{item.name}}
-					</span>
-				</li>
-			</ul>
+	<div>
+		<!-- 动态绑定v-bind:seller缩写:seller v-on:click=缩写@click= -->
+		<div class="goods">
+			<!-- ref属性和vue1.0的v-el:不同 -->
+			<div class="menu-wapper" ref="menuWrapper">
+				<ul>
+					<!-- 计算menu和foods联动 -->
+					<li v-for="(item,index) in goods" class="menu-item" :class="{'current':currentIndex===index}" @click="selectMenu(index,$event)">
+						<span class="text border-1px">
+							<span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>{{item.name}}
+						</span>
+					</li>
+				</ul>
+			</div>
+			<div class="foods-wrapper" ref="foodsWrapper">
+				<ul>
+					<li v-for="item in goods" class="food-list food-list-hook">
+						<h1 class="title">{{item.name}}</h1>
+						<ul>
+							<!-- 单击商品列表，选择商品，将food传入子组件，进入详情页 -->
+							<li @click="selectFood(food,$event)" v-for="food in item.foods" class="food-item border-1px">
+								<div class="icon">
+									<!-- 图片建议直接在标签内写好宽高 -->
+									<img width="57" height="57" :src="food.icon" alt="">
+								</div>
+								<div class="content">
+									<h2 class="name">{{food.name}}</h2>
+									<p class="desc">{{food.description}}</p>
+									<div class="extra">
+										<span class="count">月售{{food.sellCount}}份</span>
+										<span class="rating">好评率: {{food.rating}}%</span>
+									</div>
+									<div class="price">
+										<span class="now">￥{{food.price}}</span>
+										<span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
+									</div>
+									<div class="cartcontrol-wrapper">
+										<!-- 使用 v-on缩写@，监听子组件上 $emit 的变化，是跨多层父子组件通信的话， $emit （仔组件定义）并没有什么用 -->
+										<cartcontrol @add="addFood" :food="food"></cartcontrol>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+			<shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+		<!-- 使用 v-on缩写@，监听子组件上 $emit 的变化，是跨多层父子组件通信的话， $emit （仔组件定义）并没有什么用 -->
 		</div>
-		<div class="foods-wrapper" ref="foodsWrapper">
-			<ul>
-				<li v-for="item in goods" class="food-list food-list-hook">
-					<h1 class="title">{{item.name}}</h1>
-					<ul>
-						<li v-for="food in item.foods" class="food-item border-1px">
-							<div class="icon">
-								<!-- 图片建议直接在标签内写好宽高 -->
-								<img width="57" height="57" :src="food.icon" alt="">
-							</div>
-							<div class="content">
-								<h2 class="name">{{food.name}}</h2>
-								<p class="desc">{{food.description}}</p>
-								<div class="extra">
-									<span class="count">月售{{food.sellCount}}份</span>
-									<span class="rating">好评率: {{food.rating}}%</span>
-								</div>
-								<div class="price">
-									<span class="now">￥{{food.price}}</span>
-									<span v-show="food.oldPrice" class="old">￥{{food.oldPrice}}</span>
-								</div>
-								<div class="cartcontrol-wrapper">
-									<!-- 使用 v-on缩写@，监听子组件上 $emit 的变化，是跨多层父子组件通信的话， $emit （仔组件定义）并没有什么用 -->
-									<cartcontrol @add="addFood" :food="food"></cartcontrol>
-								</div>
-							</div>
-						</li>
-					</ul>
-				</li>
-			</ul>
-		</div>
-		<shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
-	<!-- 使用 v-on缩写@，监听子组件上 $emit 的变化，是跨多层父子组件通信的话， $emit （仔组件定义）并没有什么用 -->
-	<food :food="selectedFood" ref="food"></food>	
+		<!-- food组件要和goods同级，要不会被header遮挡 -->
+		<food :food="selectedFood" ref="food"></food>			
 	</div>
 </template>
 
@@ -68,7 +72,8 @@
 				goods: [],
 				// foods列表高度
 				listHeight: [],
-				scrollY: 0
+				scrollY: 0,
+				selectedFood: {}
 			};
 		},
 		created() {
@@ -126,6 +131,17 @@
 				// better-Scroll接口
 				this.foodsScroll.scrollToElement(el, 300);
 			},
+			// 点击商品 进入详情页,点击的food传入子组件
+			selectFood(food, event) {
+				if (!event._constructed) {
+					return;
+				}
+				this.selectedFood = food;
+				this.$refs.food.show();
+			},
+			selectedFood() {
+				console.log();
+			},
 			// 滚动函数
 			_initScroll() {
 				this.menuScroll = new BScroll(this.$refs.menuWrapper, {
@@ -165,9 +181,6 @@
 				this.$nextTick(() => {
 					this.$refs.shopcart.drop(target);
 				});
-		},
-			selectedFood() {
-				console.log();
 			}
 		},
 		components: {
