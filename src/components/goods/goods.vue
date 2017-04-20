@@ -44,12 +44,14 @@
 						</ul>
 					</li>
 				</ul>
-			</div>
-			<shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
+			</div>		
 		<!-- 使用 v-on缩写@，监听子组件上 $emit 的变化，是跨多层父子组件通信的话， $emit （仔组件定义）并没有什么用 -->
 		</div>
+		<!-- 同级z-index才会比较 -->
+		<shopcart ref="shopcart" :select-foods="selectFoods" :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"></shopcart>
 		<!-- food组件要和goods同级，要不会被header遮挡 -->
-		<food :food="selectedFood" ref="food"></food>			
+		<!-- add接收子组件传出事件，并且触发父组件相同事件 -->
+		<food @add="addFood" :food="selectedFood" ref="food"></food>			
 	</div>
 </template>
 
