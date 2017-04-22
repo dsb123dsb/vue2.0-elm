@@ -25,11 +25,16 @@
 						<div @click.stop.prevent="addFirst" class="buy" v-show="!food.count||food.count===0">加入购物车</div>				
 					</transition>					
 				</div>
-			<split v-show="food.info"></split>
-			<div class="info" v-show="food.info">
-				<h1 class="title">商品信息</h1>
-				<p class="text">{{food.info}}</p>
-			</div>
+				<split v-show="food.info"></split>
+				<div class="info" v-show="food.info">
+					<h1 class="title">商品信息</h1>
+					<p class="text">{{food.info}}</p>
+				</div>
+				<split></split>
+				<div class="ratings">
+					<h1 class="title">商品评价</h1>
+					<ratingselect :select-type="selectType" :only-content="onlyContent" :desc="desc" :ratings="food.ratings" class=""></ratingselect>
+				</div>
 			</div>
 		</div>		
 	</transition>
@@ -40,7 +45,11 @@
 	import cartcontrol from '@/components/cartcontrol/cartcontrol';
 	import Vue from 'vue';
 	import split from '@/components/split/split';
+	import ratingselect from '@/components/ratingselect/ratingselect';
 
+	// const POSITIVE = 0;
+	// const NEGATIVE = 1;
+	const ALL = 2;
 	export default {
 		props: {
 			food: {
@@ -49,13 +58,22 @@
 		},
 		data() {
 			return {
-				showFlag: false
+				showFlag: false,
+				selectType: ALL,
+				onlyContent: true,
+				desc: {
+					all: '全部',
+					positive: '推荐',
+					negative: '吐槽'
+				}
 			};
 		},
 		methods: {
 			// 子组件方法可以被外部父组件调用，可用_表示为内部私有
 			show() {
 				this.showFlag = true;
+				this.selectType = ALL;
+				this.onlyContent = true;
 				this.$nextTick(() => {
 					if (!this.scroll) {
 						this.scroll = new BScroll(this.$refs.food, {
@@ -82,7 +100,8 @@
 		},
 		components: {
 			cartcontrol,
-			split
+			split,
+			ratingselect
 		}
 	};
 </script>
@@ -187,4 +206,12 @@
 				padding: 0 8px
 				font-size: 12px
 				color: rgb(77,85,93)		
+		.ratings
+			padding-top: 18px
+			.title
+				line-height: 14px
+				margin-left: 18px
+				font-size: 14px
+				color: rgb(7,17,27)				
+				
 </style>
