@@ -211,7 +211,7 @@
 		// 禁止滚动
 		z-index: -2
 		// 超出隐藏的话手机测试底部空白把购物车挡住
-		// overflow: hidden
+		overflow: hidden
 		.menu-wapper
 			flex: 0 0 80px
 			// width 还要设置，要不会有兼容性问题,左侧固定，右侧自适应
