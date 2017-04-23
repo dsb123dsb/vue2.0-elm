@@ -5,7 +5,7 @@
 			<span @click="select(0,$event)" class="block positive" :class="{'active':selectType===0}">{{desc.positive}}<span class="count">{{positives.length}}</span></span>
 			<span @click="select(1,$event)" class="block negative" :class="{'active':selectType===1}">{{desc.negative}}<span class="count">{{negatives.length}}</span></span>
 		</div>
-		<div @click="toogleContent" class="swich" :class="{'on':onlyContent}">
+		<div @click="toggleContent" class="swich" :class="{'on':onlyContent}">
 			<span class="icon-check_circle"></span>
 			<span class="text">只看有内容的评价</span>
 		</div>
@@ -48,16 +48,17 @@
 				if (!event._constructed) {
 					return;
 				}
-				this.selectType = type;
+				// 这里也更改的话，父组件也更改，相互重写
+				// this.selectType = type;
 				// 子组件更改type后派发事件，通知父组件
-				this.$emit('ratingtype.select', type);
+				this.$emit('select', type);
 			},
-			toogleContent(event) {
+			toggleContent(event) {
 				if (!event._constructed) {
 					return;
 				}
-				this.onlyContent = !this.onlyContent;
-				this.$emit('content.toggle', this.onlyContent);
+				// this.onlyContent = !this.onlyContent;
+				this.$emit('toggle', this.onlyContent);
 			}
 		},
 		computed: {
