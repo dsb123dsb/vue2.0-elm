@@ -31,7 +31,7 @@
 					<p class="text">{{food.info}}</p>
 				</div>
 				<split></split>
-				<div class="ratings">
+				<div class="rating">
 					<h1 class="title">商品评价</h1>
 					<!-- 接收子组件事件要先在子组件上，其它组件才能用 -->
 					<ratingselect @select="ratingtypeSelect" @toggle="contentToggle" :select-type="selectType" :only-content="onlyContent" :desc="desc" :ratings="food.ratings" class=""></ratingselect>
@@ -144,7 +144,7 @@
 		filters: {
 			formatDate(time) {
 				let date = new Date(time);
-				return formatDate(date, 'yyyy=MM=dd hh:mm');
+				return formatDate(date, 'yyyy-MM-dd hh:mm');
 			}
 		},
 		components: {
@@ -256,7 +256,7 @@
 				padding: 0 8px
 				font-size: 12px
 				color: rgb(77,85,93)		
-		.ratings
+		.rating
 			padding-top: 18px
 			.title
 				line-height: 14px
