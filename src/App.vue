@@ -18,6 +18,7 @@
   </div>
 </template>
 <script>
+  import {urlParse} from '@/common/js/until';
   import header from '@/components/header/header.vue';
 
   const ERR_OK = 0;
@@ -25,16 +26,23 @@
     // header组件内设置Seller数据容器对象
     data () {
       return {
-        seller: {}
+        seller: {
+          // 商家id
+          id: (() => {
+            // 从url拿到id(前端)
+            let queryParam = urlParse();
+            return queryParam.id;
+          })()
+        }
       };
     },
     // vue-resource ajax requset
     created () {
-      this.$http.get('/api/seller').then((response) => {
+      this.$http.get('/api/seller?id=' + this.seller.id).then((response) => {
         response = response.body;
         if (response.errno === ERR_OK) {
           // 设置seller数据
-          this.seller = response.data;
+          this.seller = Object.assign({}, this.seller, response.data);
           console.log('app: ', this.seller);
         }
       });

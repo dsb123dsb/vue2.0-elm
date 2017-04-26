@@ -29,6 +29,10 @@
 						</div>
 					</li>
 				</ul>
+				<div class="favorite" @click="toggleFavorite">
+					<span class="icon-favorite":class="{active:favorite}"></span>
+					<span class="text">{{favoriteText}}</span>
+				</div>
 			</div>
 			<split></split>
 			<div class="bulletin">
@@ -70,11 +74,24 @@
 	import BScroll from 'better-scroll';
 	import star from '@/components/star/star';
 	import split from '@/components/split/split';
+	import {saveToLocal, loadFormLocal} from '@/common/js/store';
 
 	export default {
 		props: {
 			seller: {
 				type: Object
+			}
+		},
+		data() {
+			return {
+				favorite: (() => {
+					return loadFormLocal(this.seller.id, 'favorite', false);
+				})()
+			};
+		},
+		computed: {
+			favoriteText() {
+				return this.favorite ? '已收藏' : '收藏';
 			}
 		},
 		// created不能保证dom渲染完成
@@ -108,6 +125,13 @@
 			});
 		},
 		methods: {
+			toggleFavorite() {
+				if (!event._constructed) {
+					return;
+				}
+				this.favorite = !this.favorite;
+				saveToLocal(this.seller.id, 'favorite', this.favorite);
+			},
 			_initScroll() {
 				if (!this.scroll) {
 					this.scroll = new BScroll(this.$refs.seller, {
@@ -155,6 +179,7 @@
 		width: 100%
 		overflow: hidden
 		.overview
+			position: relative
 			padding: 18px
 			.title
 				margin-bottom: 8px
@@ -195,6 +220,25 @@
 						color: rgb(7,17,27)
 						.stress
 							font-size: 24px
+			.favorite
+				position: absolute
+				// 宽度大于点击是增加后的字体宽度，从而图片不会位移
+				width: 50px
+				right: 5px
+				top: 18px
+				text-align: center
+				.icon-favorite
+					display: block
+					margin-bottom: 4px
+					line-height: 24px
+					font-size: 24px
+					color: #d4d6d9
+					&.active
+						color: rgb(240,20,20)
+				.text
+					line-height: 10px
+					font-size: 10px
+					color: rgb(77, 85, 93)					
 		.bulletin
 			padding: 18px 18px 0 18px
 			.title
