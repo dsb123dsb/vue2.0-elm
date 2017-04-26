@@ -13,8 +13,11 @@
         <router-link to="/seller">商家</router-link>
       </div>
     </div>
-    <!-- seller传入路由出口，三个子组件才能接收 -->
-    <router-view :seller="seller"></router-view>
+    <!-- seller传入路由出口，三个子组件才能接收 keep-alive切换路由保持状态（vue-1.0是keep-alive属性） -->
+    <keep-alive>
+      <router-view :seller="seller"></router-view>      
+    </keep-alive>
+
   </div>
 </template>
 <script>
