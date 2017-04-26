@@ -1,5 +1,6 @@
 <template>
-	<div class="seller">
+	<!-- 比较sellercontainer宽度超出seller时才设置滚动 -->
+	<div class="seller" ref="seller">
 		<div class="seller-container">
 			<div class="overview">
 				<h1 class="title">{{seller.name}}</h1>
@@ -29,12 +30,46 @@
 					</li>
 				</ul>
 			</div>
+			<split></split>
+			<div class="bulletin">
+				<h1 class="title">公告与活动</h1>
+				<div class="content-wrapper border-1px">
+					<p class="content">{{seller.bulletin}}</p>
+				</div>
+				<ul v-if="seller.supports" class="supports">
+					<!-- 列表循环vue2.0和1.0不同 -->
+					<li v-for="(item,index) in seller.supports" class="support-item border-1px">
+						<span class="icon" :class="classMap[seller.supports[index].type]"></span>
+						<span class="text">{{seller.supports[index].description}}</span>
+					</li>
+				</ul>
+			</div>
+			<split></split>
+			<div class="pics">
+				<h1 class="title">商家实景</h1>
+				<div class="pic-wrapper" ref="picWrapper">
+					<ul class="pic-list" ref="picList">
+						<li class="pic-item" v-for="pic in seller.pics">
+							<img :src="pic" width="120" height="90">
+						</li>
+					</ul>
+				</div>
+			</div>
+			<split></split>
+			<div class="info">
+				<h1 class="title border-1px">商家信息</h1>
+				<ul>
+					<li class="info-item border-1px" v-for="info in seller.infos">{{info}}</li>
+				</ul>
+			</div>
 		</div>
 	</div>
 </template>
 
 <script type="text/ecmascript-6">
+	import BScroll from 'better-scroll';
 	import star from '@/components/star/star';
+	import split from '@/components/split/split';
 
 	export default {
 		props: {
@@ -42,8 +77,70 @@
 				type: Object
 			}
 		},
+		// created不能保证dom渲染完成
+		created () {
+			this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
+		},
+		// 观察值得变化，否则mounted钩子里seller可能为空对对象
+		watch: {
+			// 刷新页面才会执行
+			'seller'() {
+				console.log('watch seller: ', this.seller);
+				this.$nextTick(() => {
+					this._initScroll();
+					this._initPics();
+				});
+			}
+		},
+		// dom渲染后执行ready，不用nextTick,vue2.0使用mounted替换了使用 mounted 并不能保证钩子函数中的 this.$el 在 document 中。为此还应该引入 Vue.nextTick/vm.$nextTic
+		// ready() {
+		// 	console.log('seller: ', this.seller);
+		// 	this.scroll = new BScroll(this.$refs.seller, {
+		// 		click: true
+		// 	});
+		// },
+		// dom渲染就会执行,会先于watch执行（此时srcoll计算不正确，watch是srccoll刷新下，，重新计算）
+		mounted() {
+			console.log('mounted seller: ', this.seller);
+			this.$nextTick(() => {
+				this._initScroll();
+				this._initPics();
+			});
+		},
+		methods: {
+			_initScroll() {
+				if (!this.scroll) {
+					this.scroll = new BScroll(this.$refs.seller, {
+						click: true
+					});
+				} else {
+					this.scroll.refresh();
+				}
+			},
+			_initPics() {
+				if (this.seller.pics) {
+					let picWidth = 120;
+					let margin = 6;
+					let width = (picWidth + margin) * this.seller.pics.length - margin;
+					console.log('refs', this.$refs);
+					this.$refs.picList.style.width = width + 'px';
+					this.$nextTick(() => {
+						if (!this.picScroll) {
+							this.picScroll = new BScroll(this.$refs.picWrapper, {
+								// 内层横向滚动，忽略外层竖向滚动
+								scrollX: true,
+								eventPassthrough: 'vertical'
+							});
+						} else {
+							this.picScroll.refresh();
+						}
+					});
+				}
+			}
+		},
 		components: {
-			star
+			star,
+			split
 		}
 	};
 </script>
@@ -66,7 +163,6 @@
 				color: rgb(7,17,27)
 			.desc
 				padding-bottom: 18px
-				line-height: 18px
 				font-size: 0
 				border-1px(rgba(7,17,27,0.1))
 				.star
@@ -74,19 +170,20 @@
 					margin-right: 8px
 					vertical-align: top
 				.text
-					margin-right: 12px
 					display: inline-block
+					margin-right: 12px
 					vertical-align: top
+					line-height: 18px
 					font-size: 10px
 					color: rgb(77,85,93)
 			.remark
 				display: flex
-				padding: 18px
+				padding: 18px 18px 0 18px 
 				.block
 					flex: 1
 					text-align: center
 					border-right: 1px solid rgba(7,17,27,0.1)
-					&:last-child
+					&:last-childs
 						border: none
 					h2
 						margin-bottom: 4px
@@ -98,4 +195,83 @@
 						color: rgb(7,17,27)
 						.stress
 							font-size: 24px
+		.bulletin
+			padding: 18px 18px 0 18px
+			.title
+				margin-bottom: 8px
+				line-height: 14px
+				font-size: 14px
+				color: rgb(7,17,27)
+			.content-wrapper
+				padding: 0 12px 16px 12px
+				border-1px(rgba(7,17,27,0.1))
+				.content
+					line-height:24px
+					font-size: 12px
+					color: rgb(240,20,20)
+			.supports
+				.support-item
+					padding: 16px 12px
+					border-1px(rgba(7,17,27,0.1))
+					font-size: 0
+					&:last-child
+						border-none()
+					.icon
+						display: inline-block
+						width: 16px
+						height: 16px
+						vertical-align: top
+						margin-right: 6px
+						background-size: 16px 16px
+						backgroung-repeat: no-repeat
+						// 父样式的子样式
+						&.decrease
+							bg-image('decrease_4')
+						&.discount
+							bg-image('discount_4')
+						&.guarantee
+							bg-image('guarantee_4')
+						&.special
+							bg-image('special_4')
+						&.invoice
+							bg-image('invoice_4')
+					.text
+						line-height: 16px
+						font-size: 12px
+						color: rgb(7,17,27)
+		.pics
+			padding: 18px
+			.title
+				margin-bottom: 12px
+				line-height: 14px
+				font-size: 14px
+				color: rgb(7,17,27)	
+			.pic-wrapper
+				width: 100%
+				overflow: hidden
+				white-space: nowrap
+				.pic-list
+					font-size: 0
+					.pic-item
+						display: inline-block
+						margin-right: 6px
+						width: 120px
+						height: 90px
+						&:last-child
+							margin-right: 0
+		.info
+			padding: 18px 18px 0 18px
+			color: rgb(7,17,27)
+			.title
+				padding-bottom: 12px
+				line-height: 14px
+				font-size: 14px
+				border-1px(rgba(7,17,27,0.1))
+			.info-item
+				padding: 16px 12px
+				line-height: 16px
+				border-1px(rgba(7,17,27,0.1))
+				font-size: 12px
+				&:last-child
+					border-none()
 </style>

@@ -35,7 +35,7 @@
         if (response.errno === ERR_OK) {
           // 设置seller数据
           this.seller = response.data;
-          console.log(this.seller);
+          console.log('app: ', this.seller);
         }
       });
     },

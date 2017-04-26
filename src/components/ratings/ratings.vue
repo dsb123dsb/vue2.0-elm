@@ -74,6 +74,7 @@
 				onlyContent: true
 			};
 		},
+		// created不能保证dom渲染完成
 		created() {
 			this.$http.get('/api/ratings').then((response) => {
 				response = response.body;

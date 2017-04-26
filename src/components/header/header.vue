@@ -79,34 +79,34 @@
 	import star from '@/components/star/star';
 
 	export default {
-	  // 钩子 父组件中绑定设置的seller
-	  props: {
-	    seller: {
-	      type: Object
-	    }
-	  },
-	  // 子组件数据
-	  data () {
-	    return {
-	      detailShow: false
-	    };
-	  },
-	  // 方法.(1.2现实消失模态框)
-	  methods: {
-	    showDetail () {
-	      this.detailShow = true;
-	    },
-	    hideDetail () {
-	      this.detailShow = false;
-	    }
-	  },
-	  created () {
-	    this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-	  },
-	  // 前面引入后，父组件内注册子组件组件名不能使用html内置标签
-	  components: {
-	    star
-	  }
+	// 钩子 父组件中绑定设置的seller
+	props: {
+		seller: {
+			type: Object
+		}
+		},
+		// 子组件数据
+		data () {
+			return {
+				detailShow: false
+			};
+		},
+		// 方法.(1.2现实消失模态框)
+		methods: {
+			showDetail () {
+				this.detailShow = true;
+		},
+			hideDetail () {
+				this.detailShow = false;
+			}
+		},
+		created () {
+			this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
+		},
+		// 前面引入后，父组件内注册子组件组件名不能使用html内置标签
+		components: {
+			star
+		}
 	};
 </script>
 <style lang="stylus" rel="stylesheet/stylus">

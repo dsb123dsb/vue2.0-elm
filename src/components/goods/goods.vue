@@ -84,7 +84,7 @@
 				response = response.body;
 				if (response.errno === ERR_OK) {
 					this.goods = response.data;
-					console.log(this.goods);
+					console.log('goods: ', this.goods);
 					// 更新数据时DOM并没有更新，是异步的，要下一个nextTick
 					this.$nextTick(() => {
 						this._initScroll();
